@@ -1,15 +1,19 @@
+package Utilities;
+
 import java.util.ArrayList;
 
-public class Stopwatch {
-    private long startTime;
+public class Stopwatch{
+    protected long startTime;
     private ArrayList<Long> laps;
     private long stopTime;
     private final boolean onlyMilliseconds;
+    private long lastMeasure; //Used to look up if there is more then a second passed;
 
     public Stopwatch(boolean onlyMilliseconds){
         startTime = now();
         laps = new ArrayList<>();
         this.onlyMilliseconds = onlyMilliseconds;
+        this.lastMeasure = now();
     }
     public Stopwatch(){
         this(true);
@@ -19,7 +23,7 @@ public class Stopwatch {
         long current = now() - startTime;
         laps.add(current);
         long lap;
-        if(laps.size() > 1) lap = current - laps.get(1);
+        if(laps.size() > 1) lap = current - laps.get(laps.size()-2);
         else lap = current;
         return onlyMilliseconds ? lap : getTime(lap);
     }
@@ -41,10 +45,10 @@ public class Stopwatch {
      * @return String with days, hours, minutes and seconds
      */
     public String getTime(long time){
-        int second = 1000;
-        int minute = second*60;
-        int hour = minute*60;
-        int day = hour*24;
+        final int second = 1000;
+        final int minute = second*60;
+        final int hour = minute*60;
+        final int day = hour*24;
 
         long days = time/day;
         long hours = (time - day*days)/hour;
@@ -73,7 +77,25 @@ public class Stopwatch {
 
     public ArrayList<Long> getLaps(){ return laps; }
 
-    private long now(){
+
+    public boolean isSecondPassed(){
+        return isSecondPassed(1);
+    }
+    public boolean isSecondPassed(int factor){
+        return isXMilliSecondPassed(factor, 1000);
+    }
+
+    protected long now(){
         return System.currentTimeMillis();
+    }
+
+    public boolean isXMilliSecondPassed(int factor, int x) {
+        if(factor != 0 && x > 0) {
+            if ((now() - lastMeasure) >= x / factor) {
+                lastMeasure = now();
+                return true;
+            }
+        }
+        return false;
     }
 }

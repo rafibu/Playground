@@ -1,4 +1,6 @@
-import javafx.application.Application;
+package Queenproblem;
+
+import Utilities.UIElements;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,7 +13,7 @@ import javafx.stage.Stage;
 
 import java.text.NumberFormat;
 
-public class ChessBoardRenderer extends Application {
+public class ChessBoardRenderer extends UIElements {
     private Stage openStage;
 
     public static void main(String... args){
@@ -23,22 +25,16 @@ public class ChessBoardRenderer extends Application {
         startScreen(primaryStage);
     }
 
-    private void startScreen(Stage primaryStage){
+    public void startScreen(Stage primaryStage){
         openStage = primaryStage;
         primaryStage.setScene(new Scene(startBox()));
-        primaryStage.setTitle("Schachbrett");
         primaryStage.show();
     }
 
+    public String getTitle(){
+        return "QueenProblem";
+    }
     private MenuBar standardMenu(ChessBoard board){
-        MenuBar menuBar = new MenuBar();
-        Menu menuFile = new Menu("Datei");
-
-        MenuItem itemNew = new MenuItem("Neu");
-        itemNew.setOnAction(event -> startScreen(openStage));
-
-        menuFile.getItems().addAll(itemNew);
-
         Menu menuBearbeiten = new Menu("Bearbeiten");
 
         MenuItem itemBack = new MenuItem("Zurück");
@@ -49,11 +45,11 @@ public class ChessBoardRenderer extends Application {
         menuBearbeiten.getItems().addAll(itemBack);
 
 
-        menuBar.getMenus().addAll(menuFile, menuBearbeiten);
-        return menuBar;
+        return super.standardMenu(menuBearbeiten);
     }
 
-    private VBox startBox(){
+    @Override
+    protected VBox startBox(){
         VBox box = new VBox();
         box.setPrefSize(400, 400);
         box.setAlignment(Pos.CENTER);
@@ -80,7 +76,7 @@ public class ChessBoardRenderer extends Application {
             openStage.show();
         });
         Button solveButton = quickScopeButton(verticalSlider);
-        box.getChildren().addAll(standardMenu(null), boardSize, verticalSlider, field, startButton);
+        box.getChildren().addAll(standardMenu((ChessBoard)null), boardSize, verticalSlider, field, startButton);
         return box;
     }
 
@@ -90,6 +86,8 @@ public class ChessBoardRenderer extends Application {
         box.getChildren().add(standardMenu(board));
         HBox topRow = new HBox();
         topRow.getChildren().add(optimalSolutionButton(board));
+        topRow.getChildren().add(randomQueensButton(board));
+        topRow.getChildren().add(emptyBoardButton(board));
         topRow.getChildren().add(new Text("Queens set: " + board.getQueens().size()));
         box.getChildren().add(topRow);
         Button[][] boardButtons = chessBoardButtons(board, 600);
@@ -142,6 +140,25 @@ public class ChessBoardRenderer extends Application {
         button.setOnAction(event -> {
             QueenProblem solver = new QueenProblem();
             ChessBoard board = solver.optimalSolution(oldBoard.getLength());
+            openStage.setScene(new Scene(ChessboardScene(board)));
+        });
+        return button;
+    }
+
+    private Button randomQueensButton(ChessBoard oldBoard){
+        Button button = new Button("Fill up with Random Queens");
+        button.setOnAction(event -> {
+            QueenProblem solver = new QueenProblem();
+            ChessBoard board = solver.randomBoardFiller(oldBoard);
+            openStage.setScene(new Scene(ChessboardScene(board)));
+        });
+        return button;
+    }
+
+    private Button emptyBoardButton(ChessBoard oldBoard){
+        Button button = new Button("Empty Board");
+        button.setOnAction(event -> {
+            ChessBoard board = new ChessBoard(oldBoard.getLength());
             openStage.setScene(new Scene(ChessboardScene(board)));
         });
         return button;

@@ -1,3 +1,6 @@
+package Utilities;
+
+import Utilities.Stopwatch;
 import org.junit.Test;
 
 public class StopwatchTest {
@@ -28,7 +31,7 @@ public class StopwatchTest {
         long lastLap = (long)stopwatch2.stopTime();
         assert thirdLap2 > lastLap;
         assert stopwatch1.getLaps().size() == 3;
-        //stopwatch1.getLaps().forEach(l -> System.out.println(stopwatch1.getTime(l)));
+        stopwatch1.getLaps().forEach(l -> System.out.println(stopwatch1.getTime(l)));
         assert firstLap1.equals("10s");
         assert thirdLap1.contains("2min 10");
         assert !secondLap1.equals(String.valueOf(secondLap2));

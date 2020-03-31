@@ -1,7 +1,9 @@
+package Queenproblem;
+
 import java.util.ArrayList;
 
 /**
- * Used in the QueenProblem as the variable Chessboard
+ * Used in the Queenproblem.QueenProblem as the variable Chessboard
  */
 public class ChessBoard {
 
@@ -28,10 +30,10 @@ public class ChessBoard {
      */
     public void setQueen(int xCor, int yCor){
         queens.add(new int[]{xCor, yCor});
-        initalizeBoard();
+        initializeBoard();
     }
 
-    private void initalizeBoard(){
+    private void initializeBoard(){
         board = new boolean[LENGTH][LENGTH];
         for(int[] queen: queens){
             int xCor = queen[0];
@@ -56,7 +58,7 @@ public class ChessBoard {
     public void removeLastQueen(){
         if(queens.size() > 0){
             queens.remove(queens.size()-1);
-            initalizeBoard();
+            initializeBoard();
         }
     }
 
@@ -64,7 +66,7 @@ public class ChessBoard {
         for(int[] test: queens){
             if(test[0] == x && test[1] == y){
                 queens.remove(test);
-                initalizeBoard();
+                initializeBoard();
                 return;
             }
         }
@@ -94,8 +96,6 @@ public class ChessBoard {
     }
 
     public int getLength(){return LENGTH;}
-
-    public ArrayList<int[]> getQueens(){return queens;}
 
     public boolean isFull(){
         for(boolean[] row: board){
@@ -127,6 +127,11 @@ public class ChessBoard {
         for(int[] queen: queens){
             this.queens.add(queen.clone());
         }
+    }
+
+    public ArrayList<int[]> getQueens(){
+        sortQueens();
+        return queens;
     }
 
     public void sortQueens(){

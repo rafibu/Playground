@@ -1,4 +1,7 @@
-import java.lang.reflect.Method;
+package Queenproblem;
+
+import Utilities.Stopwatch;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -8,10 +11,10 @@ public class QueenProblem {
         QueenProblem queenProblem = new QueenProblem();
         Stopwatch watch = new Stopwatch();
         int LENGTH = 5000;
-        int retries = 1000;
-        int max = 0;
+        int retries = 5000;
+        int max;
         for(int i = 1; i < LENGTH; i++) {
-            max = queenProblem.smartBoardFiller(i).getQueens().size();
+            max = queenProblem.randomSmartBoardFiller(i, retries).getQueens().size();
        /* for(int i = 0; i < retries; i++){
             int test = queenProblem.randomBoardFiller(LENGTH);
             System.out.println(test);
@@ -27,27 +30,29 @@ public class QueenProblem {
         return smartBoardFiller(size);
     }
 
-    /**
-     * Finds a number of Queens which can be placed on the Board by placing them randomly
-     * @param boardLength Length of Chessboard
-     * @return number of Queens
-     */
-    private int randomBoardFiller(int boardLength){
-        int numberOfQueens = 0;
-        ChessBoard board = new ChessBoard(boardLength);
+    public ChessBoard randomBoardFiller(ChessBoard board){
         while(!board.isFull()){
             setRandomQueen(board);
-            numberOfQueens++;
         }
-        return numberOfQueens;
+        return board;
+    }
+
+    public ChessBoard randomSmartBoardFiller(int boardLength, int retries){
+        ChessBoard board = new ChessBoard(boardLength);
+        for(int i = 0; i < retries; i++) {
+            ChessBoard test = new ChessBoard(boardLength);
+            randomBoardFiller(test);
+            if(test.getQueens().size() > board.getQueens().size()) board = test;
+            if(board.getQueens().size() == boardLength) return board;
+        }
+        return board;
     }
 
     /**
      * sets a Queen on a random free field
      * @param board Chessboard which is used
      */
-    private void setRandomQueen(ChessBoard board){
-        assert !board.isFull(): "Chessboard is already full";
+    public void setRandomQueen(ChessBoard board){
         Random random = new Random();
         int xCor;
         int yCor;
@@ -71,26 +76,11 @@ public class QueenProblem {
 
     /**
      * sets recursively queens on those places where they subdue the least open fields
-     * ToDO: change method from recursive to dynamic and save already tested fields, so they aren't tested anymore.
      * @param board board on which to set queen
      */
     private ChessBoard setNextSmartQueen(ChessBoard board){
         if(board.getEmptyFields().length > 0) {
-            int[][] emptyFields = board.getEmptyFields();
-            ArrayList<ChessBoard> possibleMatches = new ArrayList<>();
-            int maxEmptyFields = 0;
-            for (int[] cor : emptyFields) {
-                ChessBoard test = board.clone();
-                test.setQueen(cor[0], cor[1]);
-                if (test.getEmptyFields().length > maxEmptyFields) {
-                    possibleMatches.clear();
-                    possibleMatches.add(test);
-                    maxEmptyFields = test.getEmptyFields().length;
-                } else if (test.getEmptyFields().length == maxEmptyFields) {
-                    possibleMatches.add(test);
-                }
-            }
-            //TODO: Refactor after changing to nonrecursive
+            ArrayList<ChessBoard> possibleMatches = getPossibleMatches(board);
             int queenNumbers = 0;
             for (ChessBoard match : possibleMatches) {
                 match = setNextSmartQueen(match);
@@ -103,6 +93,25 @@ public class QueenProblem {
             }
         }
         return board;
+    }
+
+    private ArrayList<ChessBoard> getPossibleMatches(ChessBoard board){
+        assert board.getEmptyFields().length > 0;
+        int[][] emptyFields = board.getEmptyFields();
+        ArrayList<ChessBoard> possibleMatches = new ArrayList<>();
+        int maxEmptyFields = 0;
+        for (int[] cor : emptyFields) {
+            ChessBoard test = board.clone();
+            test.setQueen(cor[0], cor[1]);
+            if (test.getEmptyFields().length > maxEmptyFields) {
+                possibleMatches.clear();
+                possibleMatches.add(test);
+                maxEmptyFields = test.getEmptyFields().length;
+            } else if (test.getEmptyFields().length == maxEmptyFields) {
+                possibleMatches.add(test);
+            }
+        }
+        return possibleMatches;
     }
 
     /**
@@ -130,14 +139,6 @@ public class QueenProblem {
                 if (queenNumbers == board.getLength()) break;
             }
         }
-        return board;
-    }
-
-    /**
-     * Similar to SmartNextQueen but tries to set a Queen in L form to the last one
-     */
-    private ChessBoard setNextLStyleQueen(ChessBoard board){
-        //ToDo: implement
         return board;
     }
 }

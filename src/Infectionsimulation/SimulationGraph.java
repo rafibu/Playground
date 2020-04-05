@@ -18,6 +18,9 @@ public class SimulationGraph extends Canvas {
     }
 
     public void repaint(){
+        if(stats.size() > 500){
+            stats.remove(0);
+        }
         GraphicsContext gi = this.getGraphicsContext2D();
         paint(gi);
     }

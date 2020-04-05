@@ -9,22 +9,27 @@ public class Person {
     private final City city;
     private float x, y; //Position
     private float vx, vy; //Geschwindigkeit
-    float r; //Radius
-    int infectionPeriod;
-    boolean newlyInfected;
+    private float r; //Radius
+    private int infectionPeriod;
+    private boolean newlyInfected;
     private int secondsSymptomatic;
 
     public Person(float x, float y, float r, Status status, City city) {
         this.x = x;
         this.y = y;
+        this.r = r;
+        this.city = city;
+        setStartSpeed();
+        setStatus(status);
+    }
+
+    private void setStartSpeed(){
         vx = 2*(float)Math.random()-1;
         vy = 2*(float)Math.random()-1;
         float tmp = (float)Math.sqrt((double)vx*vx+vy*vy);
-        this.vx = vx/tmp*city.getSpeed();
-        this.vy = vy/tmp*city.getSpeed();
-        this.r = r;
-        this.city = city;
-        setStatus(status);
+        float scale = city.getSpeed() != 0 ? tmp*city.getSpeed(): tmp;
+        this.vx = vx/scale;
+        this.vy = vy/scale;
     }
 
     public Status getStatus() { return status; }

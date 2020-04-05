@@ -51,7 +51,10 @@ public class Infectionsimulator extends UIElements {
         simulationBox.getChildren().addAll(simulation);
         // Start the simulation.
         simulation.start();
-        simulation.setOnMousePressed(e -> city.generatePerson((int)e.getSceneX(), (int)e.getSceneY() - 20, getNewStatus()));
+        simulation.setOnMousePressed(e -> {
+            city.generatePerson((int)e.getSceneX(), (int)e.getSceneY() - 20, getNewStatus());
+            simulation.getGraph().repaint();
+        });
         box.getChildren().addAll(simulation, settingsBox(city));
         return new VBox(standardMenu(), box);
     }

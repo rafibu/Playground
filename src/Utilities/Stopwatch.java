@@ -1,5 +1,7 @@
 package Utilities;
 
+import javafx.animation.AnimationTimer;
+
 import java.util.ArrayList;
 
 public class Stopwatch{

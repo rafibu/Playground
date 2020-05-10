@@ -2,6 +2,7 @@ package Utilities;
 
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MathUtilities {
 
@@ -29,5 +30,14 @@ public class MathUtilities {
             }
         }
         return false;
+    }
+
+    public static Object getOneAtRandom(Object... objects){
+        Random random = new Random();
+        if(objects.length > 0) {
+            return objects[random.nextInt(objects.length)];
+        } else {
+            return null;
+        }
     }
 }

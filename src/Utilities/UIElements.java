@@ -26,6 +26,10 @@ public abstract class UIElements extends Application {
         primaryStage.show();
     }
 
+    public void startScreen(){
+        startScreen(openStage);
+    }
+
     protected MenuBar standardMenu(){
         return standardMenu(new MenuItem[0]);
     }

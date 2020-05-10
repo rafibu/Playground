@@ -104,12 +104,24 @@ public class Sudoku extends UIElements {
     protected MenuBar standardMenu(){
         MenuBar bar = super.standardMenu();
         Menu sudokuMenu = new Menu("Sudoku");
-        MenuItem getRandom = new MenuItem("get Sudoku");
-        getRandom.setOnAction(event -> {
-                    field = DatabaseHandler.getInstance().getRandomSudokuField();
+        MenuItem getEasyRandom = new MenuItem("Easy Sudoku");
+        getEasyRandom.setOnAction(event -> {
+                    field = DatabaseHandler.getInstance().getRandomSudokuField(Difficulty.EASY);
                     startScreen();
                 }
-            );
+        );
+        MenuItem getMediumRandom = new MenuItem("Medium Sudoku");
+        getMediumRandom.setOnAction(event -> {
+                    field = DatabaseHandler.getInstance().getRandomSudokuField(Difficulty.MEDIUM);
+                    startScreen();
+                }
+        );
+        MenuItem getHardRandom = new MenuItem("Hard Sudoku");
+        getHardRandom.setOnAction(event -> {
+                    field = DatabaseHandler.getInstance().getRandomSudokuField(Difficulty.HARD);
+                    startScreen();
+                }
+        );
         MenuItem saveEasy = new MenuItem("Save Current as Easy");
         saveEasy.setOnAction(event -> DatabaseHandler.getInstance().addSudokuField(field, Difficulty.EASY));
         MenuItem saveMedium = new MenuItem("Save Current as Medium");
@@ -118,7 +130,7 @@ public class Sudoku extends UIElements {
         saveHard.setOnAction(event -> DatabaseHandler.getInstance().addSudokuField(field, Difficulty.HARD));
         MenuItem delete = new MenuItem("Delete Current");
         delete.setOnAction(event -> DatabaseHandler.getInstance().deleteSudokuField(field));
-        sudokuMenu.getItems().addAll(getRandom, saveEasy, saveMedium, saveHard, delete);
+        sudokuMenu.getItems().addAll(getEasyRandom, getMediumRandom, getHardRandom, saveEasy, saveMedium, saveHard, delete);
         bar.getMenus().add(sudokuMenu);
         return bar;
     }

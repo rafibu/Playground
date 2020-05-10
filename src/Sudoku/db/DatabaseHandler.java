@@ -60,13 +60,13 @@ public class DatabaseHandler {
         execute(sb.toString());
     }
 
-    public SudokuField getRandomSudokuField(){
+    public SudokuField getRandomSudokuField(Difficulty difficulty){
         SudokuField field = new SudokuField();
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url);
             Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM sudokus ORDER BY RANDOM() LIMIT 1;");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM sudokus WHERE difficulty = \"" + difficulty.toString() + "\" ORDER BY RANDOM() LIMIT 1;");
             for(int x = 0; x < 9; x++){
                 for (int y = 0; y < 9; y++) {
                     int i = 0;

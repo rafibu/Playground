@@ -17,14 +17,19 @@ public class Sudoku extends UIElements {
     protected VBox startBox() {
         VBox box = new VBox();
         box.setPrefSize(500, 500);
-        Button reset = new Button("Reset");
-        reset.setOnAction(event -> {
+        Button newSudoku = new Button("New Sudoku");
+        newSudoku.setOnAction(event -> {
             resetField();
+            startScreen();
+        });
+        Button restartField = new Button("Restart Field");
+        restartField.setOnAction(event -> {
+            field.restartField();
             startScreen();
         });
         Button solve = new Button("Solve");
         solve.setOnAction(event -> {
-            field.solveField(!field.isFirstTry());
+            field.solveField();
             startScreen();
         });
         Button solveOne = new Button("Solve Next");
@@ -47,7 +52,7 @@ public class Sudoku extends UIElements {
             field = generator.generateHard();
             startScreen();
         });
-        HBox buttonBox = new HBox(reset, solve, solveOne);
+        HBox buttonBox = new HBox(newSudoku, restartField, solve, solveOne);
         HBox generateBox = new HBox(generateEasy, generateMedium, generateHard);
         VBox sudokuBox = sudokuBox();
         sudokuBox.setAlignment(Pos.CENTER);

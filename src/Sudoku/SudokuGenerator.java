@@ -6,7 +6,6 @@ import java.util.Random;
 import static Utilities.MathUtilities.getOneAtRandom;
 
 public class SudokuGenerator {
-    private Random random = new Random();
 
     public SudokuField generateEasy(){ return generate(40); }
     public SudokuField generateMedium(){ return generate(30); }
@@ -35,14 +34,14 @@ public class SudokuGenerator {
         do {
             field = new SudokuField();
             fillRandom(field);
-            field.solveField(false);
+            field.solveField();
         } while(!field.isFinished());
         return field;
     }
 
     /**
      * Monte Carlo Algorithm to fill a SudokuField with random numbers
-     * is completely filled in approx. 18.4%
+     * field is completely filled in approx. 18.4% of the cases
      * @param field field to fill
      */
     private void fillRandom(SudokuField field){

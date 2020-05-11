@@ -5,26 +5,25 @@ import java.util.Arrays;
 
 public class SudokuField {
     private SudokuSquare[][] field;
-    private boolean firstTry;
     private Difficulty difficulty;
 
     public SudokuField(){
-        initzalizeField();
+        initalizeField();
     }
 
-    private void initzalizeField() {
-        field = new SudokuSquare[9][9];
-        for(int i = 0; i < 9; i++){
-            for (int j = 0; j < 9; j++){
-                field[i][j] = new SudokuSquare(this, i, j);
-            }
+    /**
+     * checks the field until one square is solved
+     */
+    public void solveOne() {
+        for(SudokuSquare square: getSquares()){
+            if(solveSquare(square)) break;
         }
     }
 
-    private void setNumber(SNumber number, int x, int y){
-        field[x][y].setDefinitiveNumber(number);
-    }
-
+    /**
+     * tries to set the number, only does so if it's a possible number
+     * @return true if number could be set
+     */
     public boolean setNumber(String number, int x, int y){
         if(number.matches("[1-9]")) {
             int i = Integer.parseInt(number);
@@ -41,51 +40,49 @@ public class SudokuField {
         return false;
     }
 
-    public void solveField(boolean bruteForce){
+    /**
+     * solves whole field if possible, stops if no field can be solved anymore
+     */
+    public void solveField(){
         while(!isFinished()){
             int i = 0;
-            for (SudokuSquare[] row : field) {
-                for (SudokuSquare square : row) {
-                    if(solveSquare(square)) {
-                        i++;
-                    }
+            for (SudokuSquare square : getSquares()) {
+                if(solveSquare(square)) {
+                    i++;
                 }
             }
             if(i == 0) break;
         }
-        firstTry = true;
     }
 
+    /**
+     * checks if the square can be solved and solves it
+     * @return true if one square (might not be this one) is solved
+     */
     private boolean solveSquare(SudokuSquare square){
         return square.getDefinitiveNumber() == null && (square.solveObvious() != null || solvePacks(square.getX(), square.getY()));
     }
 
-
-    public void solveOne() {
-        for (SudokuSquare[] row : field) {
-            boolean br = false;
-            for (SudokuSquare square : row) {
-                if(solveSquare(square)){
-                    br = true;
-                    break;
-                }
-            }
-            if(br) break;
-        }
-    }
-
+    /**
+     * solves the vertical and horizontal rows in which square x,y is in
+     * @return true if one has been solved
+     */
     private boolean solvePacks(int x, int y) {
         SudokuSquare[] row = new SudokuSquare[9];
         SudokuSquare[] vertical = new SudokuSquare[9];
         for(int i = 0; i < 9; i++) {
-            row[i] = field[i][y];
-            vertical[i] = field[x][i];
+            row[i] = getSquare(i,y);
+            vertical[i] = getSquare(x,i);
         }
         if(checkOnePossibleSquare(row)) return true;
         if(checkOnePossibleSquare(vertical)) return true;
         return solveCompactSquare(x, y);
     }
 
+    /**
+     * solves the 3*3 field of squares in which square x,y is in
+     * @return true if one has been solved
+     */
     private boolean solveCompactSquare(int x, int y) {
         SudokuSquare[] squares = new SudokuSquare[9];
         int s = 0;
@@ -93,13 +90,18 @@ public class SudokuField {
         int sy = y/3;
         for(int i = 0; i < 3; i++){
             for(int j = 0; j < 3; j++){
-                squares[s] = field[sx*3 +i][sy*3+j];
+                squares[s] = getSquare(sx*3 +i, sy*3+j);
                 s++;
             }
         }
         return checkOnePossibleSquare(squares);
     }
 
+    /**
+     * checks if one of the squares and solves it
+     * @param squares squares to check
+     * @return true if a square has been solved
+     */
     private boolean checkOnePossibleSquare(SudokuSquare[] squares) {
         ArrayList<SNumber> possibilities = getPossibilities(squares);
         if(possibilities == null) return true;
@@ -123,6 +125,11 @@ public class SudokuField {
         return false;
     }
 
+    /**
+     * gets possibilities for an Array of squares
+     * @param squares Array of squares
+     * @return all still possible numbers in at least one of the squares, null if one has been solved
+     */
     private ArrayList<SNumber> getPossibilities(SudokuSquare[] squares) {
         ArrayList<SNumber> possibilities = new ArrayList<>();
         ArrayList<SNumber> nonStarters = new ArrayList<>();
@@ -144,25 +151,21 @@ public class SudokuField {
         return possibilities;
     }
 
-    boolean isFinished(){
-        for(SudokuSquare[] row: field){
-            for(SudokuSquare square: row){
-                if(square.getDefinitiveNumber() == null) return false;
+    /**
+     * initalizes an empty field of squares
+     */
+    private void initalizeField() {
+        field = new SudokuSquare[9][9];
+        for(int i = 0; i < 9; i++){
+            for (int j = 0; j < 9; j++){
+                field[i][j] = new SudokuSquare(this, i, j);
             }
         }
-        return true;
     }
 
-    private void bruteForceField(){
-        //TODO: Write Bruteforce solving Algorithm
-    }
-
-    public boolean isFirstTry() { return firstTry; }
-
-    public SNumber getNumber(int x, int y){
-        return field[x][y].getDefinitiveNumber();
-    }
-
+    /**
+     * @return Arraylist of all still possible numbers at square x,y
+     */
     public ArrayList<SNumber> getPossibilities(int x, int y) {
         ArrayList<SNumber> possibilities = new ArrayList<>(9);
         if(getNumber(x, y) == null) {
@@ -182,11 +185,12 @@ public class SudokuField {
         return possibilities;
     }
 
-    public Difficulty getDifficulty() { return difficulty; }
-    public void setDifficulty(Difficulty difficulty) { this.difficulty = difficulty; }
-
+    /**
+     * copies a fields parameter onto this
+     * @param toCopy field which should be copied from
+     */
     public void copy(SudokuField toCopy){
-        initzalizeField();
+        initalizeField();
         this.difficulty = toCopy.getDifficulty();
         for(int i = 0; i < 9; i++){
             for(int j = 0; j < 9; j++){
@@ -195,17 +199,29 @@ public class SudokuField {
         }
     }
 
-    public SudokuSquare getSquare(int x, int y) {
-        return field[x][y];
-    }
-
+    /**
+     * checks if this field is solvable without ambiguity
+     * @return true if field can be solved
+     */
     public boolean isSolvable(){
         SudokuField copy = new SudokuField();
         copy.copy(this);
-        copy.solveField(false);
+        copy.solveField();
         return copy.isFinished();
     }
 
+    public boolean isFinished(){
+        for(SudokuSquare[] row: field){
+            for(SudokuSquare square: row){
+                if(square.getDefinitiveNumber() == null) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return all squares of the field as an array
+     */
     public SudokuSquare[] getSquares(){
         ArrayList<SudokuSquare> squares = new ArrayList<>();
         for(int i = 0; i < 9; i++){
@@ -216,11 +232,34 @@ public class SudokuField {
         return squares.toArray(new SudokuSquare[9*9]);
     }
 
+    /**
+     * @return number of already filled fields
+     */
     public int getFilled() {
         int res = 0;
         for(SudokuSquare square: getSquares()){
             if(square.getDefinitiveNumber() != null) res++;
         }
         return res;
+    }
+
+    public SudokuSquare getSquare(int x, int y) {
+        return field[x][y];
+    }
+
+    public SNumber getNumber(int x, int y){
+        return getSquare(x,y).getDefinitiveNumber();
+    }
+    private void setNumber(SNumber number, int x, int y){
+        getSquare(x,y).setDefinitiveNumber(number);
+    }
+
+    public Difficulty getDifficulty() { return difficulty; }
+    public void setDifficulty(Difficulty difficulty) { this.difficulty = difficulty; }
+
+    public void restartField() {
+        for(SudokuSquare square: getSquares()){
+            if(!square.isInitial()) square.setDefinitiveNumber(null);
+        }
     }
 }

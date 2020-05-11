@@ -18,14 +18,6 @@ public class SudokuSquare {
     public SNumber getDefinitiveNumber() { return definitiveNumber; }
     public void setDefinitiveNumber(SNumber definitiveNumber) { this.definitiveNumber = definitiveNumber; }
 
-    private boolean isFinal() {
-        return getDefinitiveNumber() != null;
-    }
-
-    public boolean canSolve(){
-        return !isFinal() && field.getPossibilities(x,y).size() == 1;
-    }
-
     public SNumber solveObvious(){
         if(field.getPossibilities(x,y).size() == 1) {
             SNumber solution = field.getPossibilities(x, y).remove(0);

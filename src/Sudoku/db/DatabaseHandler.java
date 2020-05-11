@@ -62,6 +62,7 @@ public class DatabaseHandler {
 
     public SudokuField getRandomSudokuField(Difficulty difficulty){
         SudokuField field = new SudokuField();
+        field.setDifficulty(difficulty);
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url);
@@ -73,6 +74,7 @@ public class DatabaseHandler {
                     try{ i = rs.getInt("X" + x + "Y" + y); } catch (SQLException f){ /* do nothing */}
                     if(i > 0){
                         field.setNumber(i+"", x, y);
+                        field.getSquare(x,y).setInitial(true);
                     }
                 }
             }

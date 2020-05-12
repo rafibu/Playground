@@ -171,6 +171,6 @@ public class MineBoard {
         return getField(x, y) == Minefield.MINE_COVERED;
     }
     public String getTime(){
-        return timer != null ? timer.getTime(): null;
+        return timer != null ? timer.showTime(): null;
     }
 }

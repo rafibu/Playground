@@ -8,8 +8,8 @@ public class GameTimer extends Stopwatch {
         super(false);
     }
 
-    public String getTime(){
-        long time = now() - startTime;
+    public String showTime(){
+        long time = getTime();
         final int second = 1000;
         final int minute = second*60;
 

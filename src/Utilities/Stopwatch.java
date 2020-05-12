@@ -8,6 +8,7 @@ public class Stopwatch{
     protected long startTime;
     private ArrayList<Long> laps;
     private long stopTime;
+    private boolean stopped = false;
     private final boolean onlyMilliseconds;
     private long lastMeasure; //Used to look up if there is more then a second passed;
 
@@ -31,10 +32,17 @@ public class Stopwatch{
     }
 
     public Object stopTime(){
-        stopTime = now();
+        if(!hasStopped()) {
+            stopTime = now();
+            stopped = true;
+        }
         long time = stopTime - startTime;
         laps.add(time);
         return onlyMilliseconds ? time : getTime(time);
+    }
+
+    public long getTime(){
+        return hasStopped() ? stopTime - startTime : now() - startTime;
     }
 
     public void resetTime(){
@@ -100,4 +108,6 @@ public class Stopwatch{
         }
         return false;
     }
+
+    public boolean hasStopped(){ return stopped; }
 }

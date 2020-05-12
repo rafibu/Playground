@@ -14,7 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.text.*;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow;
 import javafx.util.Duration;
@@ -68,10 +68,11 @@ public class Minesweeper extends UIElements {
 
     private PopupWindow endGameBox(String text){
         Popup popup = new Popup();
-        Text loserText = new Text(text);
-        loserText.minHeight(40);
+        Text message = new Text(text);
+        message.minHeight(40);
+        message.setTextAlignment(TextAlignment.CENTER);
+        message.setFont(Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 10));
         popup.setAutoFix(true);
-        popup.setAutoHide(true);
         popup.setHideOnEscape(true);
         Button okButton = new Button("Zurück zum Menü");
         okButton.minWidth(80);
@@ -88,8 +89,9 @@ public class Minesweeper extends UIElements {
             popup.hide();
         });
         HBox hbox =  new HBox(10, okButton, restartButton);
-        VBox vbox = new VBox(10, loserText, hbox);
+        VBox vbox = new VBox(10, message, hbox);
         popup.getContent().addAll(vbox);
+        popup.setAutoFix(true);
         return popup;
     }
     private PopupWindow loserWindow() {
@@ -128,9 +130,11 @@ public class Minesweeper extends UIElements {
         }
         if(board.hasWon()){
             PopupWindow window = winnerWindow();
+            window.setAutoFix(true);
             window.show(openStage);
         } else if(board.hasLost()){
             PopupWindow window = loserWindow();
+            window.setAutoFix(true);
             window.show(openStage);
         }
         return box;
@@ -190,7 +194,7 @@ public class Minesweeper extends UIElements {
 
     private String getTime(){
         if(board != null && board.getTime() != null) {
-            if (board.hasLost()) {
+            if (board.hasLost() || board.hasWon()) {
                 board.timer.stopTime();
             }
             return board.getTime();

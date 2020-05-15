@@ -1,27 +1,14 @@
 package Sudoku.db;
 
-import java.sql.*;
+import Utilities.DatabaseUtil;
+
 import java.util.ArrayList;
 
-public class Create {
+public class CreateSudokuDB {
     private static String url = "jdbc:sqlite:C:/Users/rafae/Desktop/Stuff/Java/Java Math Tools/src/Sudoku/db/" + "Sudoku.db";
 
-    public static void createNewDatabase() {
-        try {
-            Connection conn = DriverManager.getConnection(url);
-            if (conn != null) {
-                DatabaseMetaData meta = conn.getMetaData();
-                System.out.println("The driver name is " + meta.getDriverName());
-                System.out.println("A new database has been created.");
-            }
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public static void main(String[] args) {
-        createNewDatabase();
+        DatabaseUtil.createNewDatabase(url);
         fillDB();
     }
 
@@ -47,13 +34,7 @@ public class Create {
                 ")";
 
 
-        try{
-            Connection conn = DriverManager.getConnection(url);
-            Statement stmt = conn.createStatement();
-            stmt.execute(createTable);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        DatabaseUtil.executeFillDB(createTable, url);
     }
 
 }

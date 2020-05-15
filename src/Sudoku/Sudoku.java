@@ -1,6 +1,6 @@
 package Sudoku;
 
-import Sudoku.db.DatabaseHandler;
+import Sudoku.db.SudokuDatabaseHandler;
 import Utilities.UIElements;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -111,30 +111,30 @@ public class Sudoku extends UIElements {
         Menu sudokuMenu = new Menu("Sudoku");
         MenuItem getEasyRandom = new MenuItem("Easy Sudoku");
         getEasyRandom.setOnAction(event -> {
-                    field = DatabaseHandler.getInstance().getRandomSudokuField(Difficulty.EASY);
+                    field = SudokuDatabaseHandler.getInstance().getRandomSudokuField(Difficulty.EASY);
                     startScreen();
                 }
         );
         MenuItem getMediumRandom = new MenuItem("Medium Sudoku");
         getMediumRandom.setOnAction(event -> {
-                    field = DatabaseHandler.getInstance().getRandomSudokuField(Difficulty.MEDIUM);
+                    field = SudokuDatabaseHandler.getInstance().getRandomSudokuField(Difficulty.MEDIUM);
                     startScreen();
                 }
         );
         MenuItem getHardRandom = new MenuItem("Hard Sudoku");
         getHardRandom.setOnAction(event -> {
-                    field = DatabaseHandler.getInstance().getRandomSudokuField(Difficulty.HARD);
+                    field = SudokuDatabaseHandler.getInstance().getRandomSudokuField(Difficulty.HARD);
                     startScreen();
                 }
         );
         MenuItem saveEasy = new MenuItem("Save Current as Easy");
-        saveEasy.setOnAction(event -> DatabaseHandler.getInstance().addSudokuField(field, Difficulty.EASY));
+        saveEasy.setOnAction(event -> SudokuDatabaseHandler.getInstance().addSudokuField(field, Difficulty.EASY));
         MenuItem saveMedium = new MenuItem("Save Current as Medium");
-        saveMedium.setOnAction(event -> DatabaseHandler.getInstance().addSudokuField(field, Difficulty.MEDIUM));
+        saveMedium.setOnAction(event -> SudokuDatabaseHandler.getInstance().addSudokuField(field, Difficulty.MEDIUM));
         MenuItem saveHard = new MenuItem("Save Current as Hard");
-        saveHard.setOnAction(event -> DatabaseHandler.getInstance().addSudokuField(field, Difficulty.HARD));
+        saveHard.setOnAction(event -> SudokuDatabaseHandler.getInstance().addSudokuField(field, Difficulty.HARD));
         MenuItem delete = new MenuItem("Delete Current");
-        delete.setOnAction(event -> DatabaseHandler.getInstance().deleteSudokuField(field));
+        delete.setOnAction(event -> SudokuDatabaseHandler.getInstance().deleteSudokuField(field));
         sudokuMenu.getItems().addAll(getEasyRandom, getMediumRandom, getHardRandom, saveEasy, saveMedium, saveHard, delete);
         bar.getMenus().add(sudokuMenu);
         return bar;

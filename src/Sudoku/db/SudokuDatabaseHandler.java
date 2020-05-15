@@ -1,43 +1,15 @@
 package Sudoku.db;
 
 import Sudoku.Difficulty;
-import Sudoku.Sudoku;
 import Sudoku.SudokuField;
-import Utilities.MathUtilities;
+import Utilities.DatabaseUtil;
 
 import java.sql.*;
-import java.util.Random;
 
-public class DatabaseHandler {
-    private static DatabaseHandler INSTANCE;
+public class SudokuDatabaseHandler {
+    private static SudokuDatabaseHandler INSTANCE;
     // db parameters
     private static String url = "jdbc:sqlite:C:/Users/rafae/Desktop/Stuff/Java/Java Math Tools/src/Sudoku/db/" + "Sudoku.db";
-
-    /**
-     * Connects to database and executes a Statement
-     */
-    private static void execute(String statement) {
-       Connection conn = null;
-        try {
-            // create a connection to the database
-            conn = DriverManager.getConnection(url);
-            Statement stmt = conn.createStatement();
-            stmt.execute(statement);
-
-            System.out.println("Statement was successful \uD83E\uDD73");
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-    }
 
     public void addSudokuField(SudokuField field, Difficulty difficulty) {
         StringBuilder sb = new StringBuilder();
@@ -57,7 +29,7 @@ public class DatabaseHandler {
         field.setDifficulty(difficulty);
 
         sb.append(columns).append("\n").append(values);
-        execute(sb.toString());
+        DatabaseUtil.execute(sb.toString(), url);
     }
 
     public SudokuField getRandomSudokuField(Difficulty difficulty){
@@ -92,9 +64,9 @@ public class DatabaseHandler {
         return field;
     }
 
-    public static DatabaseHandler getInstance(){
+    public static SudokuDatabaseHandler getInstance(){
         if(INSTANCE == null){
-            INSTANCE = new DatabaseHandler();
+            INSTANCE = new SudokuDatabaseHandler();
         }
         return INSTANCE;
     }
@@ -113,6 +85,6 @@ public class DatabaseHandler {
                 }
             }
         }
-        execute(sb.toString());
+        DatabaseUtil.execute(sb.toString(), url);
     }
 }

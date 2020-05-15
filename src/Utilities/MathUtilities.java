@@ -1,6 +1,7 @@
 package Utilities;
 
 
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,20 +20,18 @@ public class MathUtilities {
         return prob >= Math.random();
     }
 
-    public static boolean isInList(Object obj, ArrayList<Object> list) {
-        return isIn(obj, list.toArray());
-    }
+    public static <T> boolean isInList(T obj, ArrayList<T> list) { return isIn(obj, list.toArray()); }
 
-    public static boolean isIn(Object obj, Object... list) {
+    public static <T> boolean isIn(T obj, T... list) {
         if(list != null) {
-            for (Object ele : list) {
+            for (T ele : list) {
                 if(obj == ele) return true;
             }
         }
         return false;
     }
 
-    public static Object getOneAtRandom(Object... objects){
+    public static <T> T getOneAtRandom(T... objects){
         Random random = new Random();
         if(objects.length > 0) {
             return objects[random.nextInt(objects.length)];

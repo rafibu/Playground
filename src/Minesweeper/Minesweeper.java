@@ -1,11 +1,11 @@
 package Minesweeper;
 
+import Minesweeper.db.MinesweeperDatabaseHandler;
+import Sudoku.Difficulty;
 import Utilities.SliderBox;
 import Utilities.UIElements;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,6 +18,11 @@ import javafx.scene.text.*;
 import javafx.stage.Popup;
 import javafx.stage.PopupWindow;
 import javafx.util.Duration;
+
+import java.util.Arrays;
+
+import static javafx.geometry.Pos.CENTER;
+import static javafx.geometry.Pos.CENTER_LEFT;
 
 public class Minesweeper extends UIElements {
     private final int MINEHEIGHT = 25;
@@ -40,18 +45,28 @@ public class Minesweeper extends UIElements {
         Button easy = defaultButton("Einfach", 9, 9, 10);
         Button medium = defaultButton("Mittel", 16, 16, 36);
         Button hard = defaultButton("Schwierig", 30, 16, 99);
+        HBox buttonBox = new HBox(new Text(" "), easy, new Text(" "), medium, new Text(" "), hard);
 
-        SliderBox widthSlider = new SliderBox("Breite:", 20);
-        SliderBox lengthSlider = new SliderBox("Länge:", 20);
-        SliderBox mineSlider = new SliderBox("Anzahl Minen:", 45);
+        SliderBox widthSlider = new SliderBox("Breite:", 20, 80, 4);
+        SliderBox lengthSlider = new SliderBox("Länge:", 20, 80, 4);
+        SliderBox mineSlider = new SliderBox("Anzahl Minen:", 45, 400);
 
         Button startButton = new Button("Start");
         startButton.setOnAction(event -> {
-            board = new MineBoard(lengthSlider.getIntValue(), widthSlider.getIntValue(), mineSlider.getIntValue());
-            openStage.setScene(new Scene(MinesweeperScene(board)));
+            final int length = lengthSlider.getIntValue();
+            final int width = widthSlider.getIntValue();
+            final int mines = mineSlider.getIntValue();
+            if(length*width >= mines && (length*width)/mines < 200) {
+                board = new MineBoard(length, width, mines);
+                openStage.setScene(new Scene(MinesweeperScene(board)));
+            } else {
+                lengthSlider.setValue(20);
+                widthSlider.setValue(20);
+                mineSlider.setValue(45);
+            }
             openStage.show();
         });
-        box.getChildren().addAll(standardMenu(), easy, medium, hard, lengthSlider, widthSlider, mineSlider, startButton);
+        box.getChildren().addAll(standardMenu(), new Text(""), buttonBox, new Text(""), new Text("Eigenes Feld:"), lengthSlider, widthSlider, mineSlider, startButton, statsBox());
         return box;
     }
 
@@ -131,6 +146,10 @@ public class Minesweeper extends UIElements {
         if(board.hasWon()){
             PopupWindow window = winnerWindow();
             window.setAutoFix(true);
+            Difficulty difficulty = evaluateDifficulty(board);
+            if(difficulty != null){
+                MinesweeperDatabaseHandler.getInstance().addWinnerTime(board.timer.getTime(), difficulty);
+            }
             window.show(openStage);
         } else if(board.hasLost()){
             PopupWindow window = loserWindow();
@@ -138,6 +157,46 @@ public class Minesweeper extends UIElements {
             window.show(openStage);
         }
         return box;
+    }
+
+    private VBox statsBox(){
+        VBox box = new VBox(new Text(""), new Text("Statistiken:"), new Text(""));
+        Difficulty[] difficulties = new Difficulty[]{Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD};
+        for(Difficulty difficulty: difficulties){
+            box.getChildren().add(difficultyBox(difficulty));
+        }
+        box.setAlignment(CENTER);
+        return box;
+    }
+
+    private VBox difficultyBox(Difficulty difficulty) {
+        VBox box = new VBox(new Text(difficulty.toString()));
+        long[] times = MinesweeperDatabaseHandler.getInstance().loadTimes(difficulty);
+        Arrays.sort(times);
+        for(int i = 1; i <= 3; i++){
+            if(times.length >= i) {
+                box.getChildren().add(new Text(i + ". " + GameTimer.getTime(times[i - 1])));
+            }
+        }
+        if(times.length > 0) {
+            long average = 0;
+            for (long e : times) average += e;
+            average = average / times.length;
+            box.getChildren().add(new Text("Gewonnene Spiele: " + times.length));
+            box.getChildren().add(new Text("Durchschnitt: " + GameTimer.getTime(average)));
+        }
+        box.getChildren().add(new Text(""));
+        box.setAlignment(CENTER);
+        return box;
+    }
+
+    private Difficulty evaluateDifficulty(MineBoard board) {
+        switch(board.getWidth()){
+            case 9: if(board.getLength() == 9 && board.getAmountMines() == 10) return Difficulty.EASY;
+            case 16: if(board.getLength() == 16 && board.getAmountMines() == 36) return Difficulty.MEDIUM;
+            case 30: if(board.getLength() == 16 && board.getAmountMines() == 99) return Difficulty.HARD;
+            default: return null;
+        }
     }
 
     private Button[][] mineButtons(MineBoard board) {

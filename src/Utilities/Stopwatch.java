@@ -54,7 +54,7 @@ public class Stopwatch{
      * @param time time to translate
      * @return String with days, hours, minutes and seconds
      */
-    public String getTime(long time){
+    public static String getTime(long time){
         final int second = 1000;
         final int minute = second*60;
         final int hour = minute*60;

@@ -165,6 +165,7 @@ public class SudokuField {
 
     /**
      * @return Arraylist of all still possible numbers at square x,y
+     * TODO: Set instead of Arraylist
      */
     public ArrayList<SNumber> getPossibilities(int x, int y) {
         ArrayList<SNumber> possibilities = new ArrayList<>(9);
